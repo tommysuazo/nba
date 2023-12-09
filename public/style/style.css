@@ -1,0 +1,162 @@
+
+@font-face {
+    font-family: 'roboto';
+    src: url('fonts/Roboto-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'roboto';
+    src: url('fonts/Roboto-Medium.ttf') format('truetype');
+    font-weight: bold;
+}
+
+
+
+
+html {
+    font-size: 6.25%;
+    font-family: "roboto";
+    color: #fff;
+    background: #202124;
+}
+
+body {
+    font-size: 16rem;
+}
+
+a {
+    text-decoration: none;
+    color: #fff;
+}
+
+header.main {
+    padding: 10rem 25rem;
+    background: #252931;
+}
+
+header.main a {
+    font-size: 20rem;
+    padding: 5rem 10rem;
+}
+
+main {
+    padding-top: 25rem;
+}
+
+
+h1.title {
+    text-align: center;
+}
+
+
+
+p.successful_messages {
+    width: max-content;
+    margin: 20rem auto;
+    padding: 10rem 20rem;
+    background: #00bd27;
+}
+
+p.error_messages {
+    width: max-content;
+    margin: 20rem auto;
+    padding: 10rem 20rem;
+    background: #911717;
+}
+
+.textarea {
+    display: block;
+    margin: 0 auto 10rem auto;
+    
+}
+
+
+/* INDEX =========================================================================================================================================*/
+
+.bets, .bets * {
+    display: block;
+}
+
+.bets thead {
+    padding-top: 50rem;
+}
+
+.bets thead:first-of-type {
+    padding-top: 0;
+}
+
+.bets thead tr.title {
+    margin-top: 30rem;
+}
+
+tr.title, tr.headings {
+    text-transform: uppercase;
+}
+
+tr.title, tr.headings .teams {
+    padding: 20rem 0;
+}
+
+.bets tr.headings, .bets tr.stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.bets tr.stats {
+    padding: 5rem 10rem
+}
+
+.bets tr.stats thead td {
+    text-align: center;
+}
+
+.bets tr.stats td:first-of-type {
+    text-align: left;
+}
+
+tr.stats td * {
+    display: inline-block;
+}
+
+tr.stats td {
+    padding: 0 5rem;
+}
+
+tr.stats input {
+    width: 35rem;
+    color: #fff;
+    background: #383a40;
+    border: none;
+    
+}
+
+tr.stats td span {
+    padding: 0 2rem;
+}
+
+/* GAMES ====================================================================================================================== */
+
+main.game button {
+    display: block;
+    width: 200rem;
+    padding: 5rem 15rem;
+    margin: 50rem auto 0 auto;
+}
+
+/* BETLINE ====================================================================================================================n */
+
+.sportlines {
+    display: flex;
+    justify-content: space-around;
+}
+
+main.betline button {
+    display: block;
+    width: 200rem;
+    padding: 5rem 15rem;
+    margin: 50rem auto 0 auto;
+}
+
+button#linedestroy {
+    margin-right: 60rem;
+}
