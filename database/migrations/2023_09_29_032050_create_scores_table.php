@@ -16,19 +16,19 @@ return new class extends Migration
             $table->unsignedBigInteger("game_id")->nullable();
             $table->unsignedBigInteger("team_id")->nullable();
             $table->unsignedBigInteger("rival_id")->nullable();
-            $table->enum("type", ["home", "away"]);
+            $table->enum("type", ["away", "home"]);
             $table->unsignedTinyInteger("pts");
             $table->unsignedTinyInteger("ast");
             $table->unsignedTinyInteger("reb");
 
             $table->foreign("game_id")->references('id')->on('games')
-                ->onDelete("cascade")->onUpdate("set null");
+                ->onDelete("cascade")->onUpdate("cascade");
 
             $table->foreign("team_id")->references('id')->on('teams')
-                ->onDelete("cascade")->onUpdate("set null");
+                ->onDelete("set null")->onUpdate("cascade");
 
             $table->foreign("rival_id")->references('id')->on('scores')
-                ->onDelete("cascade")->onUpdate("set null");
+                ->onDelete("set null")->onUpdate("cascade");
 
         });
     }

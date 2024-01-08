@@ -4,52 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Player;
 use App\Models\Schedule;
-use App\Models\Stat;
 use App\Models\Team;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class BetController extends Controller
 {
-
-    private $teamcodes = [
-        "ATL" => "ATL",
-        "BKN" => "BKN",
-        "BOS" => "BOS",
-        "CHA" => "CHA",
-        "CHI" => "CHI",
-        "CLE" => "CLE",
-        "DAL" => "DAL",
-        "DEN" => "DEN",
-        "DET" => "DET",
-        "GSW" => "GSW",
-        "HOU" => "HOU",
-        "IND" => "IND",
-        "LAC" => "LAC",
-        "LAL" => "LAL",
-        "MEM" => "MEM",
-        "MIA" => "MIA",
-        "MIL" => "MIL",
-        "MIN" => "MIN",
-        "NOP" => "NOP",
-        "NY" => "NYK",
-        "NY\r" => "NYK",
-        "OKC" => "OKC",
-        "ORL" => "ORL",
-        "PHI" => "PHI",
-        "PHO" => "PHX",
-        "POR" => "POR",
-        "SAC" => "SAC",
-        "SA" => "SAS",
-        "SA\r" => "SAS",
-        "TOR" => "TOR",
-        "UTH" => "UTA",
-        "WAS" => "WAS",
-    ];
-
     public function index(){
-
-        // return Team::with("players.stats")->where("code", "NOP")->get();
+        // return Stat::join("players", "players.id", "stats.player_id")->select(["stats.*", "players.name"])->orderBy("id", "desc")->take(100)->get();
 
         $games = Schedule::query()
             ->select([
@@ -83,158 +45,6 @@ class BetController extends Controller
             "lineboard" => "required|string"
         ]);
 
-        DB::beginTransaction();
-
-        $lines = $data["lineboard"];
-
-        $labels = [
-            "pts" => "(Puntos)", 
-            "ast" => "(Asistencias)", 
-            "reb" => "(Rebotes)", 
-            "end" => "(Pts + Reb + Ast)",
-            "teams" => "Crea Una Apuesta",
-        ];
-
-        $ptsPos = strpos($lines, $labels["pts"]) + strlen($labels["pts"]);
-        
-        $rebPos = strpos($lines, $labels["reb"]) + strlen($labels["reb"]);
-
-        $astPos = strpos($lines, $labels["ast"]) + strlen($labels["ast"]);
-
-        $end = strpos($lines, $labels["end"]) + strlen($labels["end"]);
-
-        $teamPos = strpos($lines, $labels["teams"]) + strlen($labels["teams"]);
-
-        $markets = [];
-        
-        $markets["pts"] = substr($lines, $ptsPos, $rebPos - $ptsPos);
-        
-        $markets["reb"] = substr($lines, $rebPos, $astPos - $rebPos);
-        
-        $markets["ast"] = substr($lines, $astPos, $end - $astPos);
-
-        $teamcodes = explode(" @ ", substr($lines, $teamPos + 2, 9));
-
-        
-
-        $teams = Team::with("players")->whereIn("code", [
-            $this->teamcodes[trim($teamcodes[0])], $this->teamcodes[trim($teamcodes[1])]
-        ])->get();
-        
-        $players = $teams->pluck("players");
-
-        $players = $players[0]->concat($players[1]);
-
-        $betlines = [];
-
-        foreach ($players as $player) {
-            $betlines[$player->name] = ["id" => $player->id];
-        }
-        
-        $ptslines = trim(str_replace("\r", "", $markets["pts"]));
-
-        $ptslines = explode("\n", $ptslines);
-
-        $countLines = count($ptslines);
-
-        for ($i = 0; $i < $countLines; $i+=12) {
-            if (!empty($betlines[$ptslines[$i]])) {
-                preg_match("/\d+/", $ptslines[$i+4], $matches);
-                $betlines[$ptslines[$i]]["pts"] = $matches[0];
-            
-            } else {
-
-                $player = collect($players)->filter(function ($player) use ($ptslines, $i) {
-                    $shortname = strtoupper(substr($player["name"], 0, 1)) == $ptslines[$i][0];
-                    $lastName = stripos($player["name"], explode(" ", $ptslines[$i])[1]) !== false;
-                    return $shortname && $lastName;
-                })->first();
-                
-                if (!empty($player)) {
-                    preg_match("/\d+/", $ptslines[$i+4], $matches);
-                    $betlines[$player->name]["pts"] = $matches[0];
-                }
-            }
-        }
-
-
-        // // AST =====================================================================================
-
-        $astlines = trim(str_replace("\r", "", $markets["ast"]));
-
-        $astlines = explode("\n", $astlines);
-
-        $countLines = count($astlines);
-
-        for ($i = 0; $i < $countLines; $i+=12) {
-            if (!empty($betlines[$astlines[$i]])) {
-                preg_match("/\d+/", $astlines[$i+4], $matches);
-                $betlines[$astlines[$i]]["ast"] = $matches[0];
-            
-            } else {
-                $player = collect($players)->filter(function ($player) use ($astlines, $i) {
-                    $shortname = strtoupper(substr($player["name"], 0, 1)) == $astlines[$i][0];
-                    $lastName = stripos($player["name"], explode(" ", $astlines[$i])[1]) !== false;
-                    return $shortname && $lastName;
-                })->first();
-                
-                if (!empty($player)) {
-                    preg_match("/\d+/", $astlines[$i+4], $matches);
-                    $betlines[$player->name]["ast"] = $matches[0];
-                }
-            }
-        }
-
-
-        // REB ===========================================================================================
-
-        $reblines = trim(str_replace("\r", "", $markets["reb"]));
-
-        $reblines = explode("\n", $reblines);
-
-        $countLines = count($reblines);
-
-        for ($i = 0; $i < $countLines; $i+=12) {
-            if (!empty($betlines[$reblines[$i]])) {
-                preg_match("/\d+/", $reblines[$i+4], $matches);
-                $betlines[$reblines[$i]]["reb"] = $matches[0];
-            
-            } else {
-                $player = collect($players)->filter(function ($player) use ($reblines, $i) {
-                    $shortname = strtoupper(substr($player["name"], 0, 1)) == $reblines[$i][0];
-                    $lastName = stripos($player["name"], explode(" ", $reblines[$i])[1]) !== false;
-                    return $shortname && $lastName;
-                })->first();
-                
-                if (!empty($player)) {
-                    preg_match("/\d+/", $reblines[$i+4], $matches);
-                    $betlines[$player->name]["reb"] = $matches[0];
-                }
-            }
-        }
-
-        foreach ($betlines as $line){
-            Player::where('id', $line["id"])->update([
-                "pts" => $line["pts"] ?? 0,
-                "ast" => $line["ast"] ?? 0,
-                "reb" => $line["reb"] ?? 0,
-            ]);
-        }
-
-        Schedule::create([
-            "awayteam_id" => $teams->firstWhere("code", $this->teamcodes[trim($teamcodes[0])])->id,
-            "hometeam_id" => $teams->firstWhere("code", $this->teamcodes[trim($teamcodes[1])])->id
-        ]);
-
-        DB::commit();
-
-        return redirect()->route("line.create");
-
-    }
-
-
-    public function destroy()
-    {
         Player::where("id", "!=", 0)->update([
             "pts" => 0,
             "ast" => 0,
@@ -242,8 +52,123 @@ class BetController extends Controller
         ]);
 
         Schedule::where("id", "!=", 0)->delete();
+        
+        $labels = [
+            "pts" => "Más/Menos (Puntos)",
+            "reb" => "Más/Menos (Rebotes)",
+            "ast" => "Más/Menos (Asistencias)",
+            "end" => "Más/Menos (Pts + Reb + Ast)"
+        ];
+
+        $lineboard = str_replace("\r\n", "|",  $data["lineboard"]) ;
+
+        $ptsPos = strpos($lineboard, $labels["pts"]) + strlen($labels["pts"]);
+        
+        $rebPos = strpos($lineboard, $labels["reb"]) + strlen($labels["reb"]);
+
+        $astPos = strpos($lineboard, $labels["ast"]) + strlen($labels["ast"]);
+
+        $end = strpos($lineboard, $labels["end"]) + strlen($labels["end"]);
+
+        $markets = [];
+
+        $markets["pts"] = explode("||", substr($lineboard, $ptsPos + 2, $rebPos - $ptsPos));
+
+        $markets["reb"] = explode("||", substr($lineboard, $rebPos + 2, $astPos - $rebPos));
+        
+        $markets["ast"] = explode("||", substr($lineboard, $astPos + 2, $end - $astPos));
+
+        $teamPosition = [];
+        $teamNames = [];
+        $games = [];
+
+        foreach ($markets as $key => $market) {
+            foreach ($market as $index => $value) {
+                if (stripos($value, "@") !== false) {
+                    $teamPosition[$key][] = $index;
+                    
+                    if ($key === "pts"){
+                        $games[] = explode(" @ ", trim($value));
+                        $teamNames[] = end($games)[0];
+                        $teamNames[] = end($games)[1];
+                    }
+                }
+            }
+        }
+
+        $gameMarkets = [];
+
+        foreach ($teamPosition as $key => $position) {
+            for ($i = 0; $i < count($position)-1; $i++) { 
+                $gameMarkets[$key][] = array_slice($markets[$key], $position[$i] + 2, $position[$i+1] - 2 - $position[$i]);
+            }
+            $gameMarkets[$key][] = array_slice($markets[$key], end($position) + 2, count($markets[$key]) - end($position) - 4);
+        }
+
+        $teams = Team::with("players")->whereIn("name", $teamNames)->get();
+
+        DB::beginTransaction();
+
+        $betlines = [];
+
+        foreach ($games as $index => $game) {
+            $players = $teams->whereIn("name", $game)->pluck("players");
+            $players = $players[0]->concat($players[1]);
+
+            foreach ($players as $player) {
+                $betlines[$player->name] = ["id" => $player->id];
+            }
+
+            $lines = [];
+            $count = [];
+
+            $lines["pts"] = $gameMarkets["pts"][$index];
+            $lines["ast"] = $gameMarkets["ast"][$index];
+            $lines["reb"] = $gameMarkets["reb"][$index];
+            $count["pts"] = count($lines["pts"]);
+            $count["ast"] = count($lines["ast"]);
+            $count["reb"] = count($lines["reb"]);
+
+            foreach ($lines as $key => $line) {
+                for ($i = 0; $i < $count[$key]; $i+=6) {
+                    $name = $line[$i];
+
+                    if (empty($betlines[$name])) {
+                        $firstName = $name[0];
+                        $lastName = explode(" ", $name)[1];
+
+                        $player = $players->filter(function ($player) use ($firstName, $lastName) {
+                            return $firstName === $player->name[0] && stripos($player->name, $lastName) !== false;
+                        })->first();
+
+                        $name = $player->name ?? null;
+                    }
+
+                    if (!empty($name)){
+                        preg_match("/\d+/", $line[$i+2], $matches);
+                        $betlines[$name][$key] = $matches[0];
+                    }
+                }
+            }
+
+            Schedule::create([
+                "awayteam_id" => $teams->firstWhere("name", $game[0])->id,
+                "hometeam_id" => $teams->firstWhere("name", $game[1])->id
+            ]);
+        }
+
+        foreach ($betlines as $name => $line) {
+            Player::where('id', $line["id"])->update([
+                "pts" => $line["pts"] ?? 0,
+                "ast" => $line["ast"] ?? 0,
+                "reb" => $line["reb"] ?? 0
+            ]);
+        }
+
+        DB::commit();
 
         return redirect()->route("line.create");
+
     }
 
 

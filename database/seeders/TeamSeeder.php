@@ -40,7 +40,7 @@ class TeamSeeder extends Seeder
         $teams[] = ["code" => "UTA", "name" => "Utah Jazz"];
 
         $teams[] = ["code" => "GSW", "name" => "Golden State Warriors"];
-        $teams[] = ["code" => "LAC", "name" => "LA Clippers"];
+        $teams[] = ["code" => "LAC", "name" => "Los Angeles Clippers"];
         $teams[] = ["code" => "LAL", "name" => "Los Angeles Lakers"];
         $teams[] = ["code" => "PHX", "name" => "Phoenix Suns"];
         $teams[] = ["code" => "SAC", "name" => "Sacramento Kings"];

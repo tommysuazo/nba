@@ -136,6 +136,14 @@ tr.stats td span {
 
 /* GAMES ====================================================================================================================== */
 
+#game_store div {
+    text-align: center;
+}
+
+#game_store .date {
+    padding: 4rem;
+}
+
 main.game button {
     display: block;
     width: 200rem;

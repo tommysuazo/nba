@@ -24,4 +24,4 @@ Route::delete("/sportline/destroy", [BetController::class, "destroy"])->name("li
 Route::get('/players', [BetController::class, "index"])->name("players");
 
 Route::get('/games/create', [GameController::class, "create"])->name("game.create");
-Route::post("games/store", [GameController::class, "store"])->name("game.store");
+Route::post("games/store", [GameController::class, "storeGameday"])->name("game.store");

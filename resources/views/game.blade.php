@@ -16,8 +16,11 @@
 
         <form action="{{ route("game.store") }}" method="POST" id="game_store">
             @csrf
-            <textarea name="game" class="textarea" cols="100" rows="25"></textarea>
-            <button id="gamesubmit" type="submit">Registrar juego</button>
+            <div>
+                <input class="date" type="date" name="fromDate" id="fromDate" value="{{ date("Y-m-d") }}">
+                <input class="date" type="date" name="toDate" id="toDate" value="{{ date("Y-m-d") }}">
+            </div>
+            <button id="gamesubmit" type="submit">Registrar juegos</button>
         </form>
     </main>
 @endsection

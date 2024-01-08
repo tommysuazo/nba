@@ -13,11 +13,9 @@ return new class extends Migration
     {
         Schema::create('teams', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger("external_id")->nullable();
             $table->string("code", 3);
             $table->string("name");
-            $table->decimal("pts", 4, 1, true)->default(0);
-            $table->decimal("ast", 3, 1, true)->default(0);
-            $table->decimal("reb", 3, 1, true)->default(0);
         });
     }
 
