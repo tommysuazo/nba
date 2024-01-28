@@ -34,7 +34,7 @@ class GameController extends Controller
             if (!$gamedayResponse->successful()) {
                 return response()->json(["message" => "Gameday {$date} failed"], $gamedayResponse->status());
             }
-            sleep(1);
+            
             $games = json_decode(json_encode($gamedayResponse->json()))->data->games;
 
             foreach ($games as $game) {

@@ -13,7 +13,7 @@ class GameRepository
 {
     public function store($data) {
 
-        if (!empty(Game::where("external_id", $data->details->id)->first())){
+        if (!empty(Game::where("external_id", $data->details->id)->first()) || empty($data->visiting_team->starters)){
             return false;
         }
 

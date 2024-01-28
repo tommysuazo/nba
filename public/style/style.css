@@ -12,7 +12,6 @@
 
 
 
-
 html {
     font-size: 6.25%;
     font-family: "roboto";
@@ -30,6 +29,7 @@ a {
 }
 
 header.main {
+    text-align: center;
     padding: 10rem 25rem;
     background: #252931;
 }
@@ -40,7 +40,7 @@ header.main a {
 }
 
 main {
-    padding-top: 25rem;
+    padding: 15rem 0;
 }
 
 
@@ -131,6 +131,8 @@ tr.stats input {
 }
 
 tr.stats td span {
+    text-align: center;
+    width: 20rem;
     padding: 0 2rem;
 }
 

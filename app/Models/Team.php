@@ -11,6 +11,6 @@ class Team extends Model
     public $timestamps = "false";
 
     public function players(){
-        return $this->hasMany(Player::class, "team_id", "id");
+        return $this->hasMany(Player::class, "team_id", "id")->orderBy("name");
     }
 }
